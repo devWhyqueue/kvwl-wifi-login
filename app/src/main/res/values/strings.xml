@@ -2,7 +2,7 @@
     <string name="app_name">KVWL Wifi Login</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
+    <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
@@ -12,4 +12,15 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="prompt_username">Username</string>
+    <string name="save_credentials">Save Credentials?</string>
+    <string name="tick_content">Success icon</string>
+    <string name="login_success">Successfully logged in</string>
+    <string name="exit_msg">The app will close now ...</string>
+    <string name="login_error">An error occured</string>
+    <string name="redirect_msg">You will be redirected to the login in a few seconds ...</string>
+    <string name="username_lbl">Username:</string>
+    <string name="username_placeholder">{Username}</string>
+    <string name="error_content">Error icon</string>
+    <string name="loading_msg">Logging in ...</string>
 </resources>
