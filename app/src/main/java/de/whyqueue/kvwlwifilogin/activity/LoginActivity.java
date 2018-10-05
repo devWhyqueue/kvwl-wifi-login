@@ -46,12 +46,20 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        
+        setupLoginForm();
+        setupListener();
+    }
 
-        // Set up the login form.
+    private void setupLoginForm() {
         mUsernameView = findViewById(R.id.usernameField);
-
         mPasswordView = findViewById(R.id.password);
+        mSaveCredentialsView = findViewById(R.id.saveCredentials);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.progressView);
+    }
 
+    private void setupListener() {
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -62,8 +70,6 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
-        mSaveCredentialsView = findViewById(R.id.saveCredentials);
-
         Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
         mSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,9 +77,6 @@ public class LoginActivity extends AppCompatActivity {
                 attemptLogin();
             }
         });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.progressView);
     }
 
     @Override
