@@ -25,7 +25,6 @@
         </activity>
         <activity android:name=".activity.SuccessActivity" />
         <activity android:name=".activity.ErrorActivity" />
-        <activity android:name=".activity.LoadingActivity"></activity>
     </application>
 
 </manifest>

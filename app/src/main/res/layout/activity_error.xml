@@ -7,7 +7,7 @@
     android:layout_margin="@dimen/activity_horizontal_margin"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context=".activity.SuccessActivity">
+    tools:context=".activity.ErrorActivity">
 
     <ImageView
         android:id="@+id/error"
