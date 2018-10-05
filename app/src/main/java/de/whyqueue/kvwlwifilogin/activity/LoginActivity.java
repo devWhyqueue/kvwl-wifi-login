@@ -8,21 +8,26 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import de.whyqueue.kvwlwifilogin.R;
+import de.whyqueue.kvwlwifilogin.activity.exception.NoCredentialsInStoreException;
+import de.whyqueue.kvwlwifilogin.activity.exception.ValidationException;
 import de.whyqueue.kvwlwifilogin.activity.task.UserLoginTask;
+import de.whyqueue.kvwlwifilogin.model.Credentials;
 
 /**
  * A login screen that offers login via username/password.
  */
-public class LoginActivity extends AppCompatActivity{
+public class LoginActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -32,6 +37,7 @@ public class LoginActivity extends AppCompatActivity{
     // UI references.
     private EditText mUsernameView;
     private EditText mPasswordView;
+    private CheckBox mSaveCredentialsView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -40,10 +46,12 @@ public class LoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Set up the login form.
-        mUsernameView =  findViewById(R.id.usernameField);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        // Set up the login form.
+        mUsernameView = findViewById(R.id.usernameField);
+
+        mPasswordView = findViewById(R.id.password);
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -54,9 +62,10 @@ public class LoginActivity extends AppCompatActivity{
                 return false;
             }
         });
+        mSaveCredentialsView = findViewById(R.id.saveCredentials);
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
-        mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
+        Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
+        mSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
@@ -67,68 +76,81 @@ public class LoginActivity extends AppCompatActivity{
         mProgressView = findViewById(R.id.progressView);
     }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid username, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
-    private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-        hideKeyboard();
-
-        // Reset errors.
-        mUsernameView.setError(null);
-        mPasswordView.setError(null);
-
-        // Store values at the time of the login attempt.
-        String username = mUsernameView.getText().toString();
-        String password = mPasswordView.getText().toString();
-
-        boolean cancel = false;
-        View focusView = null;
-
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid username.
-        if (TextUtils.isEmpty(username)) {
-            mUsernameView.setError(getString(R.string.error_field_required));
-            focusView = mUsernameView;
-            cancel = true;
-        } else if (!isUsernameValid(username)) {
-            mUsernameView.setError(getString(R.string.error_invalid_email));
-            focusView = mUsernameView;
-            cancel = true;
-        }
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            TextView mUsernameTextView = findViewById(R.id.username);
-            mUsernameTextView.setText(username);
-
-            showProgress(true);
-            mAuthTask = new UserLoginTask(this, username, password);
-            mAuthTask.execute((Void) null);
+        try {
+            Credentials storedCredentials = loadCredentials();
+            login(storedCredentials);
+        } catch (NoCredentialsInStoreException e) {
+            Log.w(LoginActivity.class.getName(), e.getMessage());
         }
     }
 
-    private void hideKeyboard(){
+    private Credentials loadCredentials() throws NoCredentialsInStoreException {
+        // TODO: Load credentials
+        throw new NoCredentialsInStoreException("No credentials in store!");
+    }
+
+    private void attemptLogin() {
+        try {
+            Credentials credentials = getCredentials();
+            if (saveCredentialsChecked()) {
+                saveCredentials(credentials);
+            }
+            hideKeyboard();
+            login(credentials);
+        } catch (ValidationException e) {
+            Log.w(LoginActivity.class.getName(), e.getMessage());
+        }
+    }
+
+    private boolean saveCredentialsChecked() {
+        return mSaveCredentialsView.isChecked();
+    }
+
+    private void saveCredentials(Credentials credentials) {
+        // TODO: Save credentials
+    }
+
+    private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    private Credentials getCredentials() throws ValidationException {
+        resetErrors();
+        validateInputs();
+
+        return getInputs();
+    }
+
+    private void resetErrors() {
+        mUsernameView.setError(null);
+        mPasswordView.setError(null);
+    }
+
+    private void validateInputs() throws ValidationException {
+        validateUsername();
+        validatePassword();
+    }
+
+    private void validateUsername() throws ValidationException {
+        String username = mUsernameView.getText().toString();
+
+        // Check for a valid username.
+        if (TextUtils.isEmpty(username)) {
+            String errorMsg = getString(R.string.error_field_required);
+            setErrorAndFocus(mUsernameView, errorMsg);
+            throw new ValidationException("Validation failed due to empty username field!");
+        } else if (!isUsernameValid(username)) {
+            String errorMsg = getString(R.string.error_invalid_username);
+            setErrorAndFocus(mUsernameView, errorMsg);
+            throw new ValidationException("Validation failed due to invalid username!");
         }
     }
 
@@ -136,8 +158,49 @@ public class LoginActivity extends AppCompatActivity{
         return ussername.contains("_");
     }
 
+    private void validatePassword() throws ValidationException {
+        String password = mPasswordView.getText().toString();
+
+        // Check for a valid password
+        if (TextUtils.isEmpty(password)) {
+            String errorMsg = getString(R.string.error_field_required);
+            setErrorAndFocus(mPasswordView, errorMsg);
+            throw new ValidationException("Validation failed due to empty password field!");
+        } else if (!isPasswordValid(password)) {
+            String errorMsg = getString(R.string.error_invalid_password);
+            setErrorAndFocus(mPasswordView, errorMsg);
+            throw new ValidationException("Validation failed due to invalid password!");
+        }
+    }
+
     private boolean isPasswordValid(String password) {
         return password.length() > 5;
+    }
+
+    private void setErrorAndFocus(EditText mEditTextView, String error) {
+        mEditTextView.setError(error);
+        mEditTextView.requestFocus();
+    }
+
+    private Credentials getInputs() {
+        String username = mUsernameView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        return new Credentials(username, password);
+    }
+
+    private void login(Credentials credentials) {
+        if (mAuthTask != null) {
+            return;
+        }
+        // Show a progress spinner, and kick off a background task to
+        // perform the user login attempt.
+        TextView mUsernameTextView = findViewById(R.id.username);
+        mUsernameTextView.setText(credentials.getUsername());
+
+        showProgress(true);
+        mAuthTask = new UserLoginTask(this, credentials);
+        mAuthTask.execute((Void) null);
     }
 
     /**
@@ -180,4 +243,3 @@ public class LoginActivity extends AppCompatActivity{
         this.mAuthTask = mAuthTask;
     }
 }
-

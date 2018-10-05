@@ -23,4 +23,5 @@
     <string name="username_placeholder">{Username}</string>
     <string name="error_content">Error icon</string>
     <string name="loading_msg">Logging in ...</string>
+    <string name="error_invalid_username">This username is invalid</string>
 </resources>

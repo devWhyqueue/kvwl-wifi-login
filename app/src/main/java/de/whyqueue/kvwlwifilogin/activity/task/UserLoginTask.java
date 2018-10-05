@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import de.whyqueue.kvwlwifilogin.activity.ErrorActivity;
 import de.whyqueue.kvwlwifilogin.activity.LoginActivity;
 import de.whyqueue.kvwlwifilogin.activity.SuccessActivity;
+import de.whyqueue.kvwlwifilogin.model.Credentials;
 
 /**
  * Represents an asynchronous login/registration task used to authenticate
@@ -14,15 +15,11 @@ import de.whyqueue.kvwlwifilogin.activity.SuccessActivity;
 public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
     private final LoginActivity loginActivity;
+    private final Credentials credentials;
 
-    private final String mEmail;
-    private final String mPassword;
-
-    public UserLoginTask(LoginActivity loginActivity, String email, String password) {
+    public UserLoginTask(LoginActivity loginActivity, Credentials credentials) {
         this.loginActivity = loginActivity;
-
-        mEmail = email;
-        mPassword = password;
+        this.credentials = credentials;
     }
 
     @Override

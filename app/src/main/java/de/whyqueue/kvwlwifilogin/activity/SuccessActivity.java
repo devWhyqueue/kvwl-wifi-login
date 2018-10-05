@@ -23,7 +23,7 @@ public class SuccessActivity extends AppCompatActivity {
 
         handler.postDelayed(new Runnable() {
             public void run() {
-                finish();
+                System.exit(0);
             }
         }, duration.toMillis());
     }
