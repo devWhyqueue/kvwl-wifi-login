@@ -1,6 +1,8 @@
 package de.whyqueue.kvwlwifilogin.model;
 
-public class Credentials {
+import java.io.Serializable;
+
+public class Credentials implements Serializable {
 
     private final String username;
     private final String password;

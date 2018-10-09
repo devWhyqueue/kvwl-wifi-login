@@ -22,12 +22,17 @@ import de.whyqueue.kvwlwifilogin.R;
 import de.whyqueue.kvwlwifilogin.activity.exception.NoCredentialsInStoreException;
 import de.whyqueue.kvwlwifilogin.activity.exception.ValidationException;
 import de.whyqueue.kvwlwifilogin.activity.task.UserLoginTask;
+import de.whyqueue.kvwlwifilogin.data.CredentialsDAO;
+import de.whyqueue.kvwlwifilogin.data.CredentialsDAOContext;
+import de.whyqueue.kvwlwifilogin.data.CredentialsFileDAO;
 import de.whyqueue.kvwlwifilogin.model.Credentials;
 
 /**
  * A login screen that offers login via username/password.
  */
 public class LoginActivity extends AppCompatActivity {
+
+    private CredentialsDAO credentialsDAO;
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -46,9 +51,15 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        
+
+        setupDAO();
         setupLoginForm();
         setupListener();
+    }
+
+    private void setupDAO(){
+        CredentialsDAOContext context = new CredentialsDAOContext(getApplicationContext());
+        this.credentialsDAO = new CredentialsFileDAO(context);
     }
 
     private void setupLoginForm() {
@@ -92,8 +103,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private Credentials loadCredentials() throws NoCredentialsInStoreException {
-        // TODO: Load credentials
-        throw new NoCredentialsInStoreException("No credentials in store!");
+        return credentialsDAO.loadCredentials();
     }
 
     private void attemptLogin() {
@@ -114,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveCredentials(Credentials credentials) {
-        // TODO: Save credentials
+        credentialsDAO.saveCredentials(credentials);
     }
 
     private void hideKeyboard() {
