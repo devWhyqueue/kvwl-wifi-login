@@ -55,6 +55,8 @@ public class LoginActivity extends AppCompatActivity {
         setupDAO();
         setupLoginForm();
         setupListener();
+
+        autoLogin();
     }
 
     private void setupDAO(){
@@ -90,10 +92,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
+    private void autoLogin(){
         try {
             Credentials storedCredentials = loadCredentials();
             login(storedCredentials);
