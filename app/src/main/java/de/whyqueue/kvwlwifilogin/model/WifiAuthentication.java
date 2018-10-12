@@ -79,6 +79,26 @@ public class WifiAuthentication {
     }
 
     private void verifyAuthentication() throws IOException, WifiAuthenticationException {
+        if(connectedToInternet()){
+            return;
+        }
+        checkServerResponse();
+    }
+
+    private boolean connectedToInternet() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        }
+        catch (IOException e)          { Log.i(this.getClass().getName(), e.getMessage());}
+        catch (InterruptedException e) { Log.i(this.getClass().getName(), e.getMessage()); }
+
+        return false;
+    }
+
+    private void checkServerResponse() throws WifiAuthenticationException, IOException {
         InputStream is = new BufferedInputStream(client.getInputStream());
         Scanner sc = new Scanner(is).useDelimiter("\\A");
         String response = sc.hasNext() ? sc.next() : "";

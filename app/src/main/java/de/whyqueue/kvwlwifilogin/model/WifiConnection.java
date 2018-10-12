@@ -46,7 +46,7 @@ public class WifiConnection {
         try {
             Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
-            Log.w(this.getClass().getName(), "Interrupted in waitForConnection()!");
+            Log.w(this.getClass().getName(), e.getMessage());
         }
     }
 
