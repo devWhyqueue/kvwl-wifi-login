@@ -11,6 +11,10 @@ An Android app to login into the guest wifi.
 
 - Android Studio
 
+### Warning
+
+Disable mobile data before using the app!
+
 ## Versions
 
 Look under [kvwl-wifi-login-releases](https://github.com/devWhyqueue/kvwl-wifi-login/releases) for new releases.
