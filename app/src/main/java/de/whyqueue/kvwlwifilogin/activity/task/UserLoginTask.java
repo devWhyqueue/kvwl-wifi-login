@@ -2,6 +2,7 @@ package de.whyqueue.kvwlwifilogin.activity.task;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -29,7 +30,8 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         WifiManager wifiManager = getWifiManager();
-        WifiClient wifiClient = new WifiClient(wifiManager, credentials);
+        ConnectivityManager connectivityManager = getConnectivityManager();
+        WifiClient wifiClient = new WifiClient(wifiManager, connectivityManager, credentials);
 
         try {
             wifiClient.connect();
@@ -43,6 +45,11 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     private WifiManager getWifiManager() {
         Context context = loginActivity.getApplicationContext();
         return (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    }
+
+    private ConnectivityManager getConnectivityManager(){
+        Context context = loginActivity.getApplicationContext();
+        return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     @Override

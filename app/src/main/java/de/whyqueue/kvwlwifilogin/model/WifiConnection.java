@@ -1,7 +1,10 @@
 package de.whyqueue.kvwlwifilogin.model;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.util.Log;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +15,11 @@ public class WifiConnection {
     private static final String SSID = "gast";
 
     private WifiManager wifiManager;
+    private ConnectivityManager connectivityManager;
 
-    public WifiConnection(WifiManager wifiManager) {
+    public WifiConnection(WifiManager wifiManager, ConnectivityManager connectivityManager) {
         this.wifiManager = wifiManager;
+        this.connectivityManager = connectivityManager;
     }
 
     public void connectToWifi() throws WifiConnectionException {
@@ -24,6 +29,27 @@ public class WifiConnection {
 
         enableWifi();
         connect();
+        waitForConnection();
+    }
+
+    private void waitForConnection() throws WifiConnectionException {
+        int c = 0;
+        while(!isConnected()){
+            if(c++ > 10){
+                throw new WifiConnectionException("Connection to network " + SSID + " failed!");
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Log.w(this.getClass().getName(), "Interrupted in waitForConnection()!");
+            }
+        }
+    }
+
+    private boolean isConnected(){
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED;
     }
 
     public void disconnectFromWifi() throws WifiConnectionException {

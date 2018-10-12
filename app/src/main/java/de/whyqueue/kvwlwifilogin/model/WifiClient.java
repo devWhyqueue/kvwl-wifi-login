@@ -1,5 +1,6 @@
 package de.whyqueue.kvwlwifilogin.model;
 
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 
 import de.whyqueue.kvwlwifilogin.model.exception.WifiAuthenticationException;
@@ -10,19 +11,13 @@ public class WifiClient {
     private WifiConnection wifiConnection;
     private WifiAuthentication wifiAuthentication;
 
-    public WifiClient(WifiManager wifiManager, Credentials credentials) {
-        this.wifiConnection = new WifiConnection(wifiManager);
+    public WifiClient(WifiManager wifiManager, ConnectivityManager connectivityManager, Credentials credentials) {
+        this.wifiConnection = new WifiConnection(wifiManager, connectivityManager);
         this.wifiAuthentication = new WifiAuthentication(credentials);
     }
 
     public void connect() throws WifiConnectionException, WifiAuthenticationException {
         wifiConnection.connectToWifi();
-        // TODO: WAIT FOR WIFI
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         wifiAuthentication.login();
     }
 
