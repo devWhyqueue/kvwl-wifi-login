@@ -11,7 +11,7 @@ An Android app to login into the guest wifi.
 
 - Android Studio
 
-### Warning
+## Warning
 
 Disable mobile data before using the app!
 
