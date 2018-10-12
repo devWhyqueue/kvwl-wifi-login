@@ -17,7 +17,7 @@ import de.whyqueue.kvwlwifilogin.model.WifiClient;
  * Represents an asynchronous login/registration task used to authenticate
  * the user.
  */
-public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+public class UserLoginTask extends AsyncTask<Void, Void, String> {
 
     private final LoginActivity loginActivity;
     private final Credentials credentials;
@@ -28,17 +28,17 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(Void... params) {
+    protected String doInBackground(Void... params) {
         WifiManager wifiManager = getWifiManager();
         ConnectivityManager connectivityManager = getConnectivityManager();
         WifiClient wifiClient = new WifiClient(wifiManager, connectivityManager, credentials);
 
         try {
             wifiClient.connect();
-            return true;
+            return null;
         } catch (Exception e) {
             Log.e(this.getClass().getName(), e.getMessage());
-            return false;
+            return e.getMessage();
         }
     }
 
@@ -53,15 +53,15 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
-    protected void onPostExecute(final Boolean success) {
+    protected void onPostExecute(final String errorMsg) {
         loginActivity.setmAuthTask(null);
         loginActivity.showProgress(false);
 
-        if (success) {
+        if (errorMsg == null) {
             loginActivity.finish();
             startSuccessActivity();
         } else {
-            startErrorActivity();
+            startErrorActivity(errorMsg);
         }
     }
 
@@ -70,8 +70,9 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
         loginActivity.startActivity(intent);
     }
 
-    private void startErrorActivity() {
+    private void startErrorActivity(String msg) {
         Intent intent = new Intent(loginActivity, ErrorActivity.class);
+        intent.putExtra("ERROR", msg);
         loginActivity.startActivity(intent);
     }
 

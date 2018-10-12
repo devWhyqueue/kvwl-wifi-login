@@ -38,12 +38,15 @@ public class WifiConnection {
             if(c++ > 10){
                 throw new WifiConnectionException("Connection to network " + SSID + " failed!");
             }
+            wait(1);
+        }
+    }
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Log.w(this.getClass().getName(), "Interrupted in waitForConnection()!");
-            }
+    private void wait(int seconds){
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            Log.w(this.getClass().getName(), "Interrupted in waitForConnection()!");
         }
     }
 

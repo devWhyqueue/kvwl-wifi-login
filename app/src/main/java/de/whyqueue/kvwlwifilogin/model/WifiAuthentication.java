@@ -3,10 +3,8 @@ package de.whyqueue.kvwlwifilogin.model;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -14,12 +12,14 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import de.whyqueue.kvwlwifilogin.model.exception.WifiAuthenticationException;
 
 public class WifiAuthentication {
     private static final String LOGIN_URL = "http://wlangast.kvwl.de/login.html";
     private static final String LOGOUT_URL = "http://192.168.3.3/logout.html";
+    private static final String FAILURE_RESPONSE_TITLE = "Web Authentication Failure";
 
     private Credentials credentials;
 
@@ -50,10 +50,11 @@ public class WifiAuthentication {
         }
     }
 
-    private void authenticationHandler(String urlStr, String postParameters) throws IOException {
+    private void authenticationHandler(String urlStr, String postParameters) throws IOException, WifiAuthenticationException {
         client = openConnection(urlStr);
         configureRequest();
         sendRequest(postParameters);
+        verifyAuthentication();
         closeConnection();
     }
 
@@ -75,12 +76,16 @@ public class WifiAuthentication {
         outputPost.flush();
         outputPost.close();
 
-        // TODO: DEBUG
+    }
+
+    private void verifyAuthentication() throws IOException, WifiAuthenticationException {
         InputStream is = new BufferedInputStream(client.getInputStream());
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        while ((line = br.readLine()) != null)
-            Log.i("RESPONSE", line);
+        Scanner sc = new Scanner(is).useDelimiter("\\A");
+        String response = sc.hasNext() ? sc.next() : "";
+
+        if(response.contains(FAILURE_RESPONSE_TITLE)){
+            throw new WifiAuthenticationException("Wrong username or password!");
+        }
     }
 
     private String buildLoginPostData() {
