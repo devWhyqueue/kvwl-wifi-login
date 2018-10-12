@@ -11,10 +11,6 @@ An Android app to login into the guest wifi.
 
 - Android Studio
 
-## Running the tests
-
-The project comes with standard unit tests but has no coverage for activities, so handle with caution!
-
 ## Versions
 
 Look under [kvwl-wifi-login-releases](https://github.com/devWhyqueue/kvwl-wifi-login/releases) for new releases.
