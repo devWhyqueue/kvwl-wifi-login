@@ -11,6 +11,14 @@ An Android app to login into the guest wifi.
 
 - Android Studio
 
+## Running the app
+
+1. Turn off mobile data.
+2. Start the app.
+3. Enter your credentials.
+4. Check "Save Credentials?" (optional).
+5. Confirm and wait.
+
 ## Versions
 
 Look under [kvwl-wifi-login-releases](https://github.com/devWhyqueue/kvwl-wifi-login/releases) for new releases.
